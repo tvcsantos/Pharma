@@ -9,14 +9,6 @@ Version
 
 * medicament management
 
-Install
-=====
-Just use the installer
-
-Usage
-=====
-Just open the program filled under the program list and have fun :P
-
 Developed By
 ============
 * Tiago Santos - <camon.pt@gmail.com>
