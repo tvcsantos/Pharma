@@ -1,0 +1,453 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * InsertGUI.java
+ *
+ * Created on 1/Ago/2010, 22:47:12
+ */
+
+package pt.com.santos.pharma.db.gui;
+
+import com.google.zxing.NotFoundException;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.security.InvalidParameterException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
+import pt.com.santos.pharma.PharmaApp;
+
+/**
+ *
+ * @author camon
+ */
+public class InsertGUI extends javax.swing.JDialog {
+
+    private Timer timer;
+    private TimerTask task;
+    private boolean scheduled;
+    private Component comp;
+    
+    /** Creates new form InsertGUI */
+    public InsertGUI(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+        initMyComponents();
+    }
+
+    private void initMyComponents() {
+        setResizable(false);
+
+        addWindowListener(new WindowListener() {
+
+            public void windowOpened(WindowEvent e) {
+            }
+
+            public void windowClosing(WindowEvent e) {
+                cancel();
+                if (comp != null) {
+                    remove(comp);
+                }
+            }
+
+            public void windowClosed(WindowEvent e) {}
+
+            public void windowIconified(WindowEvent e) {}
+
+            public void windowDeiconified(WindowEvent e) {}
+
+            public void windowActivated(WindowEvent e) {
+                PharmaApp app = PharmaApp.getApplication();
+                try {
+                    if ((comp = app.getPlayerVisualComponent()) != null) {
+                        comp.setSize(new Dimension(320, 240));
+                    } else {
+                        JTextField tf = new JTextField("No Camera Available!");
+                        tf.setHorizontalAlignment(JTextField.CENTER);
+                        tf.setCaretColor(Color.white);
+                        comp = tf;
+                        comp.setSize(new Dimension(320, 230));
+                        cancel();
+                    }
+                    comp.setLocation((getWidth() - 320) / 2 - 5, 0);
+                    add(comp);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                pack();
+            }
+
+            public void windowDeactivated(WindowEvent e) {}
+        });
+        
+        PharmaApp app = PharmaApp.getApplication();
+        if (app.hasWebCam()) {
+            autoRadioButton.setSelected(true);
+            manualRadioButton.setSelected(false);
+            start();
+        } else {
+            autoRadioButton.setSelected(false);
+            autoRadioButton.setEnabled(false);
+            detectButton.setEnabled(false);
+            manualRadioButton.setSelected(true);
+            resetFields(false);
+        }
+    }
+
+    public void start() {
+        schedule();
+        resetFields(true);
+        detectButton.setEnabled(false);
+    }
+
+    private void schedule() {
+        if (!scheduled) {
+            timer = new Timer();
+            task = new TimerTask() {
+
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        grabFrame();
+                    }
+                }
+            };
+            timer.schedule(task, 5000, 2000);
+            scheduled = true;
+        }
+    }
+
+    private void cancel() {
+        timer.cancel();
+        scheduled = false;
+        if (PharmaApp.getApplication().hasWebCam()) {
+            detectButton.setEnabled(true);
+        }
+    }
+
+    private void grabFrame() {
+        PharmaApp app = PharmaApp.getApplication();
+        BufferedImage bi = app.grabFrame();
+        try {
+            String s = PharmaApp.getDecodeText(bi);
+            codeTextField.setText(s);
+            autoFill(s);
+            cancel();
+        } catch (InvalidParameterException ex) {
+            Logger.getLogger(InsertGUI.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } catch (NotFoundException ex) {
+            //Logger.getLogger(InsertGUI.class.getName())
+              //      .log(Level.SEVERE, null, ex);
+            codeTextField.setText("Not Found");
+        }
+    }
+    
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        codeTextField = new javax.swing.JTextField();
+        manualRadioButton = new javax.swing.JRadioButton();
+        separator = new javax.swing.JSeparator();
+        autoRadioButton = new javax.swing.JRadioButton();
+        addButton = new javax.swing.JButton();
+        nameTextField = new javax.swing.JTextField();
+        expTextField = new javax.swing.JTextField();
+        unitsTextField = new javax.swing.JTextField();
+        codeLabel = new javax.swing.JLabel();
+        nameLabel = new javax.swing.JLabel();
+        expLabel = new javax.swing.JLabel();
+        unitsLabel = new javax.swing.JLabel();
+        detectButton = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(InsertGUI.class);
+        setTitle(resourceMap.getString("InsertGUI.title")); // NOI18N
+        setName("InsertGUI"); // NOI18N
+
+        codeTextField.setName("codeTextField"); // NOI18N
+
+        buttonGroup1.add(manualRadioButton);
+        manualRadioButton.setText(resourceMap.getString("manualRadioButton.text")); // NOI18N
+        manualRadioButton.setName("manualRadioButton"); // NOI18N
+        manualRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manualRadioButtonActionPerformed(evt);
+            }
+        });
+
+        separator.setName("separator"); // NOI18N
+
+        buttonGroup1.add(autoRadioButton);
+        autoRadioButton.setSelected(true);
+        autoRadioButton.setText(resourceMap.getString("autoRadioButton.text")); // NOI18N
+        autoRadioButton.setName("autoRadioButton"); // NOI18N
+        autoRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoRadioButtonActionPerformed(evt);
+            }
+        });
+
+        addButton.setText(resourceMap.getString("addButton.text")); // NOI18N
+        addButton.setName("addButton"); // NOI18N
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        nameTextField.setText(resourceMap.getString("nameTextField.text")); // NOI18N
+        nameTextField.setName("nameTextField"); // NOI18N
+
+        expTextField.setText(resourceMap.getString("expTextField.text")); // NOI18N
+        expTextField.setName("expTextField"); // NOI18N
+
+        unitsTextField.setText(resourceMap.getString("unitsTextField.text")); // NOI18N
+        unitsTextField.setName("unitsTextField"); // NOI18N
+
+        codeLabel.setText(resourceMap.getString("codeLabel.text")); // NOI18N
+        codeLabel.setName("codeLabel"); // NOI18N
+
+        nameLabel.setText(resourceMap.getString("nameLabel.text")); // NOI18N
+        nameLabel.setName("nameLabel"); // NOI18N
+
+        expLabel.setText(resourceMap.getString("expLabel.text")); // NOI18N
+        expLabel.setName("expLabel"); // NOI18N
+
+        unitsLabel.setText(resourceMap.getString("unitsLabel.text")); // NOI18N
+        unitsLabel.setName("unitsLabel"); // NOI18N
+
+        detectButton.setText(resourceMap.getString("detectButton.text")); // NOI18N
+        detectButton.setName("detectButton"); // NOI18N
+        detectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detectButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(separator, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(autoRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                        .addComponent(expLabel))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(manualRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addComponent(nameLabel))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(addButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                        .addComponent(unitsLabel))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(detectButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                        .addComponent(codeLabel)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(unitsTextField)
+                    .addComponent(expTextField)
+                    .addComponent(nameTextField)
+                    .addComponent(codeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(230, 230, 230)
+                .addComponent(separator, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(codeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(codeLabel))
+                    .addComponent(detectButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(manualRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(autoRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(expTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(expLabel))
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addButton)
+                    .addComponent(unitsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(unitsLabel))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void manualRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manualRadioButtonActionPerformed
+        // TODO add your handling code here:
+        if (manualRadioButton.isSelected()) {
+            cancel();
+            resetFields(false);
+        }
+}//GEN-LAST:event_manualRadioButtonActionPerformed
+
+    private void autoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoRadioButtonActionPerformed
+        // TODO add your handling code here:
+        if (autoRadioButton.isSelected()) {
+            start();
+            resetFields(true);
+        }
+}//GEN-LAST:event_autoRadioButtonActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        // TODO add your handling code here:
+        PharmaApp app = PharmaApp.getApplication();
+        String codeS = codeTextField.getText();
+        String name = nameTextField.getText();
+        String dateS = expTextField.getText();
+        String unitsS = unitsTextField.getText();
+
+        if (codeS.isEmpty() || name.isEmpty() || 
+                dateS.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Barcode, name and date" +
+                    " cannot be empty", "Pharma", JOptionPane.ERROR_MESSAGE);
+            //System.err.println("INCOMPLETE!");
+            return;
+        }
+
+        try {
+            long code = Long.parseLong(codeS);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = sdf.parse(dateS);
+            if (!app.hasCode(code, date)) {
+                if (unitsS.isEmpty())
+                    app.insert(code, name, date);
+                else {
+                    int units = Integer.parseInt(unitsS);
+                    app.insert(code, name, date, units);
+                }
+            } else {
+                if (unitsS.isEmpty()) {
+                    app.update(code, date);
+                } else {
+                    int units = Integer.parseInt(unitsS);
+                    app.update(code, date, units);
+                }
+                ResultSet rs = app.select(code, date);
+                rs.next();
+                int units = rs.getInt(4);
+                unitsTextField.setText("" + units);
+                app.closeStat();
+            }
+            JOptionPane.showMessageDialog(this, "Product inserted successfully",
+                    "Pharma", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(InsertGUI.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(InsertGUI.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(InsertGUI.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void detectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detectButtonActionPerformed
+        // TODO add your handling code here:
+        start();
+    }//GEN-LAST:event_detectButtonActionPerformed
+
+    private void autoFill(String codeS) {
+        try {
+            PharmaApp app = PharmaApp.getApplication();
+            long code = Long.parseLong(codeS);
+            ResultSet rs = app.select(code);
+            if (rs.next()) {
+                long barcode = rs.getLong(1);
+                String name = rs.getString(2);
+                codeTextField.setText("" + barcode);
+                nameTextField.setText(name);
+                expTextField.setText("");
+                unitsTextField.setText("");
+            }
+            app.closeStat();
+        } catch (SQLException ex) {
+            Logger.getLogger(InsertGUI.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void resetFields(boolean auto) {
+        codeTextField.setEditable(!auto);
+        codeTextField.setText("");
+        nameTextField.setText("");
+        expTextField.setText("");
+        unitsTextField.setText("");
+    }
+    /**
+    * @param args the command line arguments
+    */
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                InsertGUI dialog = new InsertGUI(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addButton;
+    private javax.swing.JRadioButton autoRadioButton;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JLabel codeLabel;
+    private javax.swing.JTextField codeTextField;
+    private javax.swing.JButton detectButton;
+    private javax.swing.JLabel expLabel;
+    private javax.swing.JTextField expTextField;
+    private javax.swing.JRadioButton manualRadioButton;
+    private javax.swing.JLabel nameLabel;
+    private javax.swing.JTextField nameTextField;
+    private javax.swing.JSeparator separator;
+    private javax.swing.JLabel unitsLabel;
+    private javax.swing.JTextField unitsTextField;
+    // End of variables declaration//GEN-END:variables
+
+}
