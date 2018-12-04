@@ -11,7 +11,7 @@ Version
 
 Developed By
 ============
-* Tiago Santos - <camon.pt@gmail.com>
+* Tiago Santos - <tvcsantos@gmail.com>
 
 License
 =======
