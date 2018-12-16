@@ -29,14 +29,9 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import pt.com.santos.pharma.PharmaApp;
 
-/**
- *
- * @author camon
- */
 public class DeleteGUI extends javax.swing.JDialog {
 
     private Timer timer;
@@ -436,6 +431,7 @@ public class DeleteGUI extends javax.swing.JDialog {
             public void run() {
                 DeleteGUI dialog = new DeleteGUI(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }

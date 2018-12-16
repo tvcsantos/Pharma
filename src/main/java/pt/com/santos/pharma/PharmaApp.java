@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 

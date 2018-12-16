@@ -29,16 +29,9 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
 import pt.com.santos.pharma.PharmaApp;
 
-/**
- *
- * @author camon
- */
 public class InsertGUI extends javax.swing.JDialog {
 
     private Timer timer;
@@ -424,6 +417,7 @@ public class InsertGUI extends javax.swing.JDialog {
             public void run() {
                 InsertGUI dialog = new InsertGUI(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }

@@ -9,6 +9,10 @@ Version
 
 * medicament management
 
+Usage
+=====
+Just double click on the jar file to open the program and have fun :P
+
 Developed By
 ============
 * Tiago Santos - <tvcsantos@gmail.com>
